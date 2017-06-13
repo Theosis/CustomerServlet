@@ -27,32 +27,31 @@ public class CustomerServlet extends HttpServlet {
         
     }
     
-    
-
-	protected void doPost(HttpServletRequest lastName, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+		String nextURL = "/output.jsp";
+		String lastName = request.getParameter("lastname");
 		Connection con = cm.getConnection();
-		String query = "SELECT CustomerID, FirstName, LastName, StreetAddress, City, State FROM Customers WHERE LastName = '"+ lastName + "'";
+		/*
+		String action = request.getParameter("action");
+		if (!action.equals("label")) {
+			String url = "/index.html"; 
+		}*/
+		
+		String query = "SELECT FullName, Title, FirstName, LastName, StreetAddress, City, State,ZipCode, EmailAddress, Position, Company  FROM customers WHERE LastName = '"+ lastName + "'";
 		try{
 			
 			stm = con.createStatement();
 			rs = stm.executeQuery(query);
+		
 			while(rs.next()){
 				
-				String customerID = rs.getString("CustomerID");
-				String firstName = rs.getString("FirstName");
-				//String lastName = rs.getString("LastName");
-				String address = rs.getString("StreetAddress");
-				String city = rs.getString("City");
-				String state = rs.getString("State");
-				
-				System.out.println("CustomerNumber: "+customerID);
-				System.out.println(firstName);
-				System.out.println(address);
-				System.out.println(city);
-				System.out.println(state);
-				
+				String CustomerDetail = rs.getString("FullName") + rs.getString("Title") +rs.getString("FirstName") +  rs.getString("LastName") +rs.getString("StreetAddress") +
+				 rs.getString("City") + rs.getString("State") + rs.getString("ZipCode") + rs.getString("EmailAddress") + rs.getString("Position") + rs.getString("Company");
+				request.setAttribute("message", CustomerDetail);
 			}
+			
+			getServletContext().getRequestDispatcher(nextURL).forward(request,response);
 			
 					
 		}catch(Exception e){
